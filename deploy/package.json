@@ -1,0 +1,31 @@
+{
+  "name": "@apparts/lambda-deploy",
+  "version": "1.0.0",
+  "description": "A script to deploy code to AWS Lambda",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phuhl/apparts-s3deploy.git"
+  },
+  "bin": {
+    "lambda-deploy": "index.js"
+  },
+  "keywords": [
+    "aws",
+    "apparts"
+  ],
+  "author": "Philipp Uhl",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phuhl/apparts-lambdaDeploy/issues"
+  },
+  "homepage": "https://github.com/phuhl/apparts-lambdaDeploy#readme",
+  "dependencies": {
+    "aws-sdk": "^2.836.0",
+    "chalk": "^4.1.0",
+    "yargs": "^16.2.0"
+  }
+}
