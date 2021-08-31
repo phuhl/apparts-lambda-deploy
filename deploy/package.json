@@ -1,6 +1,6 @@
 {
   "name": "@apparts/lambda-deploy",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A script to deploy code to AWS Lambda",
   "main": "index.js",
   "scripts": {
