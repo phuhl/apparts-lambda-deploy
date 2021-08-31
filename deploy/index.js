@@ -12,44 +12,6 @@ const warning = chalk.yellow("WARNING:");
 
 const main = async ({ region, lambdaName, production }) => {
   const env = production ? "PROD" : "dev";
-  console.log(info, "Deploying to " + env);
-  if (!isDefaultYes(await askQuestion(`Is this ok? [Y/n]`))) {
-    console.log(info, "Aborted.");
-    process.exit(1);
-  }
-
-  const gitOutput = await runShellCommand("git status");
-
-  const mBranch = /On branch (.*)/.exec(gitOutput),
-    //mPushed = /Your branch is up to date with 'origin\//.exec(gitOutput),
-    mNoChanges = /nothing to commit, working tree clean/.exec(gitOutput);
-  console.log(info, "On git branch:", mBranch[1]);
-  if (!mNoChanges) {
-    console.log(warning, "There are uncommited changes");
-    console.log(info, "Aborted.");
-    process.exit(1);
-  }
-
-  const today = new Date(),
-    day = ("0" + today.getDate()).slice(-2),
-    month = ("0" + (today.getMonth() + 1)).slice(-2),
-    hour = today.getHours(),
-    minute = today.getMinutes(),
-    shouldTagName = `BE-${env}-${day}-${month}-${today.getFullYear()}-${hour}-${minute}`;
-
-  await runShellCommand("git tag " + shouldTagName);
-
-  const gitTagOutput = await runShellCommand(
-      'git log --tags --simplify-by-decoration --pretty="format: %d" -1'
-    ),
-    mTag = /\(HEAD -> [^,]+, .*?tag: (BE-[a-zA-Z-]*-[0-9-]*)/.exec(
-      gitTagOutput
-    );
-  if (!mTag || mTag[1] !== shouldTagName) {
-    throw "Git tag is missing, should have been " + shouldTagName;
-  } else {
-    console.log(info, "Git tag:", mTag[1]);
-  }
 
   // pot. install env vars
   // ...
@@ -145,10 +107,6 @@ main({
     console.log(chalk.red("ERROR:"), e);
     process.exit(1);
   });
-
-function isDefaultYes(answer) {
-  return answer === "y" || answer === "Y" || answer === "";
-}
 
 function isDefaultNo(answer) {
   return answer !== "y" && answer !== "Y";
