@@ -23,8 +23,8 @@ const main = async ({ region, lambdaName, production }) => {
     )
   )
     .split("\n")
-    .slice(-3)
-    .filter((tag) => new RegExp(`refs/tags/BE-${env}`).test(tag));
+    .filter((tag) => new RegExp(`refs/tags/BE-${env}`).test(tag))
+    .reverse();
   if (gitLastTags[1]) {
     const gitChangedSql = await runShellCommand(
       `git diff ${gitLastTags[0]} ${gitLastTags[1]} --stat -- sql`
