@@ -5,7 +5,7 @@ const { stdout } = process;
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
 const chalk = require("chalk");
-const { exec } = require("child_process");
+const { exec, spawn } = require("child_process");
 
 const info = chalk.green("i");
 const warning = chalk.yellow("WARNING:");
@@ -59,7 +59,7 @@ const main = async ({ region, lambdaName, production }) => {
 
   await runShellCommand("npm ci --production");
   console.log(info, "Zipping...");
-  await runShellCommand("zip -r lambda.zip ./*");
+  await runShellCommand("zip -r lambda.zip ./*", { asSpawn: true });
   console.log(info, "Uploading...");
   await runShellCommand(
     `aws --region "${region}" lambda update-function-code --function-name "${lambdaName}" --zip-file fileb://$(pwd)/lambda.zip`
@@ -128,7 +128,23 @@ async function getUserInput() {
   });
 }
 
-async function runShellCommand(command) {
+async function runShellCommand(command, { asSpawn }) {
+  if (asSpawn) {
+    return new Promise((res, rej) => {
+      spawn(
+        command,
+        { env: { ...process.env, LC_ALL: "en_US.UTF-8" } },
+        (error, stdout) => {
+          if (error !== null) {
+            rej(error);
+          } else {
+            res(stdout);
+          }
+        }
+      );
+    });
+  }
+
   return new Promise((res, rej) => {
     exec(
       command,
