@@ -128,7 +128,7 @@ async function getUserInput() {
   });
 }
 
-async function runShellCommand(command, { asSpawn }) {
+async function runShellCommand(command, { asSpawn } = {}) {
   if (asSpawn) {
     return new Promise((res, rej) => {
       spawn(
