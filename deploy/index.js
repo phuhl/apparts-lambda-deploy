@@ -59,7 +59,7 @@ const main = async ({ region, lambdaName, production }) => {
 
   await runShellCommand("npm ci --production");
   console.log(info, "Zipping...");
-  await runShellCommand("zip -r lambda.zip ./*", { asSpawn: true });
+  await runShellCommand("zip -r lambda.zip ./* -q");
   console.log(info, "Uploading...");
   await runShellCommand(
     `aws --region "${region}" lambda update-function-code --function-name "${lambdaName}" --zip-file fileb://$(pwd)/lambda.zip`
@@ -128,11 +128,12 @@ async function getUserInput() {
   });
 }
 
-async function runShellCommand(command, { asSpawn } = {}) {
+async function runShellCommand(command, { asSpawn, args, onData } = {}) {
   if (asSpawn) {
     return new Promise((res, rej) => {
-      spawn(
+      const child = spawn(
         command,
+        args,
         { env: { ...process.env, LC_ALL: "en_US.UTF-8" } },
         (error, stdout) => {
           if (error !== null) {
@@ -142,6 +143,20 @@ async function runShellCommand(command, { asSpawn } = {}) {
           }
         }
       );
+
+      if (onData) {
+        child.stdout.on("data", (data) => {
+          onData(data);
+        });
+      }
+
+      child.stderr.on("data", (data) => {
+        rej(data);
+      });
+
+      child.on("close", (code) => {
+        res(code);
+      });
     });
   }
 
